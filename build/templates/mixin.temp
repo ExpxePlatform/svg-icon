@@ -1,0 +1,116 @@
+const isViewBox = val => /^\d(\s\d+){3}$/.test(val)
+
+export default {
+  props: {
+    size: {
+      type: [Number, String],
+      default: '1em',
+      validator(val) {
+        return /^\d+(px|em)$/.test(val)
+      }
+    },
+    color: [Array, String, Object],
+    box: {
+      type: String,
+      validator(val) {
+        return isViewBox(val)
+      }
+    },
+    title: String
+  },
+  computed: {
+    fontSize() {
+      return isNaN(this.size) ? this.size : `${this.size}px`
+    },
+    viewBox() {
+      let viewBox = '0 0 16 16'
+
+      if (this.box) {
+        viewBox = this.box
+      } else if (
+        this.icon &&
+        this.icon.attrs &&
+        isViewBox(this.icon.attrs.viewBox)
+      ) {
+        viewBox = this.icon.attrs.viewBox
+      }
+
+      return viewBox
+    },
+    makeup() {
+      const def = {
+        fill: 'currentColor',
+        stroke: 'none',
+        'stroke-width': 'none'
+      }
+
+      const merge = (def, opt) => {
+        const result = {}
+        Object.keys(def).forEach(key => {
+          if (key in opt) {
+            result[key] = opt[key]
+          }
+        })
+        // if('stroke' in result && !('stroke-width' in result)){
+        //     result['stroke-width'] = 1
+        // }
+        return result
+      }
+
+      if (typeof this.color === 'string') {
+        return {
+          fill: this.color
+        }
+      } else if (typeof this.color === 'object') {
+        if (Array.isArray(this.color)) {
+          return this.color.map(color => {
+            if (typeof color === 'string') {
+              return {
+                fill: color
+              }
+            } else if (typeof color === 'object') {
+              return merge(def, color)
+            } else {
+              return null
+            }
+          })
+        } else {
+          return merge(def, this.color)
+        }
+      }
+    }
+  },
+  render(h) {
+    return h(
+      'svg',
+      {
+        attrs: {
+          height: this.fontSize,
+          width: this.fontSize,
+          role: this.$attrs.role || (this.title ? 'img' : null),
+          viewBox: this.viewBox,
+          ...(Array.isArray(this.makeup) ? null : this.makeup)
+        }
+      },
+      [
+        this.title ? h('title', [this.title]) : null,
+        ...(() => {
+          const shapes = []
+          const isMultiColor = Array.isArray(this.makeup)
+          let index = 0
+          Object.keys(this.icon.shapes).forEach(item => {
+            shapes.push(
+              ...this.icon.shapes[item].map(attrs => {
+                if (isMultiColor) {
+                  attrs = Object.assign(attrs, this.makeup[index++])
+                }
+                return h(item, { attrs })
+              })
+            )
+          })
+          return shapes
+        })()
+      ]
+    )
+  }
+}

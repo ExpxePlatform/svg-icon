@@ -1,0 +1,69 @@
+{
+  "name": "@expxe/svg-icon",
+  "version": "0.1.0",
+  "description": "A svg component library for Vue.js.",
+  "main": "lib/index.common.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build:lib": "webpack --config build/webpack.mixins.js && webpack --config build/webpack.component.js && webpack --config build/webpack.common.js && npm run build:umd",
+    "build:umd": "webpack --config build/webpack.umd.js",
+    "build:examples": "vue-cli-service build",
+    "icon": "node build/gen-svg-icon",
+    "lint": "vue-cli-service lint"
+  },
+  "keywords": [
+    "Expxe",
+    "Svg Icon",
+    "Vue.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ExpxeFE/svg-icon.git"
+  },
+  "author": "lixuefeng (jrelt@163.com)",
+  "license": "MIT",
+  "dependencies": {
+    "vue": "^2.6.10"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.10.0",
+    "@vue/cli-plugin-eslint": "^3.10.0",
+    "@vue/cli-service": "^3.10.0",
+    "art-template": "^4.13.2",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "progress-bar-webpack-plugin": "^1.12.1",
+    "terser-webpack-plugin": "^1.4.1",
+    "vue-template-compiler": "^2.6.10",
+    "webpack-cli": "^3.3.7",
+    "webpack-node-externals": "^1.7.2",
+    "xmldom": "^0.1.27"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "semi": 0
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

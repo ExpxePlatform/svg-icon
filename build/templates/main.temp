@@ -1,0 +1,12 @@
+import mixin from '{{packageName}}/src/mixins/icon.js'
+import icon from './index.json'
+
+export default {
+  name:icon.name,
+  mixins:[mixin],
+  data(){
+    return {
+      icon
+    }
+  }
+}

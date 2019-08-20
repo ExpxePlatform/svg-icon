@@ -1,0 +1,21 @@
+{{each icons}}import {{upperCamel($value)}} from './{{$value}}/index.js'{{if $index < icons.length-1}}{{'\n'}}{{/if}}{{/each}}
+
+const components = [
+  {{each icons}}{{upperCamel($value)}}{{if $index < icons.length-1}},{{'\n  '}}{{/if}}{{/each}}
+]
+
+const install = function(Vue) { 
+  components.forEach(component => {
+    Vue.component(component.name, component)
+  })
+}
+
+/* istanbul ignore if */
+if(typeof window !== 'undefined' && window.Vue) {
+  install(window.Vue)
+}
+
+export default {
+  install,
+  {{each icons}}{{upperCamel($value)}}{{if $index < icons.length-1}},{{'\n  '}}{{/if}}{{/each}}
+}
