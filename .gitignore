@@ -3,6 +3,7 @@ node_modules
 /dist
 /lib
 /src
+/examples
 /package-lock.json
 /components.json
 
