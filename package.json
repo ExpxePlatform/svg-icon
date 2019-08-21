@@ -13,7 +13,7 @@
     "build:lib": "webpack --config build/webpack.mixins.js && webpack --config build/webpack.component.js && webpack --config build/webpack.common.js && npm run build:umd",
     "build:umd": "webpack --config build/webpack.umd.js",
     "build:examples": "vue-cli-service build",
-    "icon": "node build/gen-svg-icon",
+    "icon": "node build/gen-svg-icon && node build/gen-font-icon",
     "lint": "vue-cli-service lint"
   },
   "keywords": [
@@ -43,7 +43,8 @@
     "vue-template-compiler": "^2.6.10",
     "webpack-cli": "^3.3.7",
     "webpack-node-externals": "^1.7.2",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.1.27",
+    "svgtofont": "^1.2.0"
   },
   "eslintConfig": {
     "root": true,

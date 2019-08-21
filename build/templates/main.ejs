@@ -1,8 +1,8 @@
-import mixin from '{{packageName}}/src/mixins/icon.js'
+import mixin from '{{name}}/src/mixins/icon.js'
 import icon from './index.json'
 
 export default {
-  name:icon.name,
+  name:`Icon${icon.name}`,
   mixins:[mixin],
   data(){
     return {

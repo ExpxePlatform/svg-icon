@@ -14,6 +14,7 @@ const externals = {
   'core-js': 'core-js',
   ...nodeExternals()
 }
+
 mixinsList.forEach(file => {
   file = path.basename(file, '.js')
   externals[`${name}/src/mixins/${file}`] = `${name}/lib/mixins/${file}`
@@ -22,5 +23,6 @@ mixinsList.forEach(file => {
 module.exports = {
   alias,
   externals,
-  mixinsList
+  mixinsList,
+  name
 }
