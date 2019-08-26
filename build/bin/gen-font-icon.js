@@ -7,6 +7,6 @@ const path = require('path')
  */
 svgtofont({
   src: path.resolve(process.cwd(), 'svg/'),
-  dist: path.resolve(process.cwd(), './src/icon-fonts'),
+  dist: path.resolve(process.cwd(), 'src/icon-fonts'),
   css: true
 })

@@ -1,4 +1,14 @@
 const isViewBox = val => /^\d(\s\d+){3}$/.test(val)
+const merge = (def, opt) => {
+  const result = {}
+  Object.keys(def).forEach(key => {
+    if (key in opt) {
+      result[key] = opt[key]
+    }
+  })
+
+  return result
+}
 
 export default {
   props: {
@@ -8,7 +18,10 @@ export default {
         return /^\d+(px|em)$/.test(val)
       }
     },
-    color: [Array, String, Object],
+    color: {
+      type: [Array, String, Object],
+      default: 'currentColor'
+    },
     box: {
       type: String,
       validator(val) {
@@ -42,39 +55,32 @@ export default {
         stroke: 'none',
         'stroke-width': 'none'
       }
-
-      const merge = (def, opt) => {
-        const result = {}
-        Object.keys(def).forEach(key => {
-          if (key in opt) {
-            result[key] = opt[key]
-          }
-        })
-        
-        return result
+      let makeup = {
+        fill: 'currentColor'
       }
 
       if (typeof this.color === 'string') {
-        return {
-          fill: this.color
-        }
-      } else if (typeof this.color === 'object') {
+        makeup.fill = this.color
+      }
+      if (typeof this.color === 'object') {
         if (Array.isArray(this.color)) {
-          return this.color.map(color => {
-            if (typeof color === 'string') {
-              return {
-                fill: color
-              }
-            } else if (typeof color === 'object') {
-              return merge(def, color)
-            } else {
-              return null
+          makeup = this.color.map(color => {
+            let result = {
+              fill: 'currentColor'
             }
+            if (typeof color === 'string') {
+              result.fill = color
+            }
+            if (typeof color === 'object') {
+              result = merge(def, color)
+            }
+            return result
           })
         } else {
-          return merge(def, this.color)
+          makeup = merge(def, this.color)
         }
       }
+      return makeup
     }
   },
   render(h) {

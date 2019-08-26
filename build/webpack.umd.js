@@ -1,8 +1,7 @@
 const path = require('path')
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const { alias } = require('./config.js')
+const { alias, name } = require('./config.js')
 
 module.exports = {
   mode: 'production',
@@ -12,7 +11,7 @@ module.exports = {
   output: {
     path: path.resolve(process.cwd(), './lib'),
     publicPath: '/dist/',
-    filename: 'index.js',
+    filename: `${name}.js`,
     chunkFilename: '[id].js',
     libraryTarget: 'umd',
     libraryExport: 'default',
@@ -49,17 +48,8 @@ module.exports = {
         test: /\.(jsx?|babel|es6)$/,
         include: process.cwd(),
         loader: 'babel-loader'
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          compilerOptions: {
-            preserveWhitespace: false
-          }
-        }
       }
     ]
   },
-  plugins: [new ProgressBarPlugin(), new VueLoaderPlugin()]
+  plugins: [new ProgressBarPlugin()]
 }

@@ -77,8 +77,8 @@ const travelDirectory = (dir, options = {}, callback) => {
 
   try {
     fs.stat(dir, onStat)
-  } catch (e) {
-    done(e)
+  } catch (err) {
+    done(err)
   }
 }
 
@@ -93,12 +93,24 @@ const mkdirSync = dirname => {
   }
 }
 
-module.exports.writeFile = (filePath, data) => {
+const readFile = filePath => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf-8', (err, data) =>
+      err ? reject(err) : resolve(data)
+    )
+  })
+}
+
+const writeFile = (filePath, data) => {
   return new Promise((resolve, reject) => {
     mkdirSync(path.dirname(filePath))
     fs.writeFile(filePath, data, err => (err ? reject(err) : resolve(data)))
   })
 }
+
+module.exports.readFile = readFile
+
+module.exports.writeFile = writeFile
 
 module.exports.upperCamel = str => {
   return str
@@ -134,68 +146,59 @@ module.exports.travelDirectory = (dir, options = {}) => {
   })
 }
 
-module.exports.Icon = (() => {
-  const Icon = function(src, dist) {
+const emit = function(data) {
+  if (this.events.length) {
+    const { event, args } = this.events.shift()
+    if (typeof event === 'function') {
+      const prams = typeof data === 'undefined' ? [args] : [data, args]
+      event(...prams)
+        .then(res => {
+          emit.call(this, res)
+        })
+        .catch(this.state.catch)
+    }
+  } else if (typeof this.state.done === 'function') {
+    this.state.done(data)
+  }
+}
+
+module.exports.Icon = class {
+  constructor(src, dist) {
     this.events = []
-    this.error = function() {}
-    this.complete = function() {}
+    this.state = {
+      then: null,
+      catch: null
+    }
 
     setTimeout(() => {
-      this.pipe(
-        src => {
-          return new Promise((resolve, reject) => {
-            fs.readFile(src, 'utf-8', (err, data) => {
-              err ? reject(err) : resolve(data)
-            })
-          })
-        },
-        true
-      )
-      this.pipe(data => {
-        return new Promise((resolve, reject) => {
-          mkdirSync(path.dirname(dist))
-          fs.writeFile(dist, data, err => {
-            err ? reject(err) : resolve(data)
-          })
-        })
-      })
-      this._emit(src)
+      if (src) {
+        this.pipe(
+          readFile,
+          src,
+          true
+        )
+      }
+      if (dist) {
+        this.pipe(
+          writeFile,
+          dist
+        )
+      }
+      emit.call(this)
     }, 0)
   }
 
-  Icon.prototype = {
-    _emit(args) {
-      if (this.events.length) {
-        const event = this.events.shift()
-        if (typeof event === 'function') {
-          event(args)
-            .then(res => this._emit(res))
-            .catch(err => this.error(err))
-        }
-      } else {
-        if (typeof this.complete === 'function') {
-          this.complete()
-        }
-      }
-    },
-    catch(callback) {
-      if (typeof callback === 'function') {
-        this.error = callback
-      }
-      return this
-    },
-    done(callback) {
-      if (typeof callback === 'function') {
-        this.complete = callback
-      }
-      return this
-    },
-    pipe(event, priority) {
-      if (typeof event === 'function') {
-        priority ? this.events.unshift(event) : this.events.push(event)
-      }
-      return this
+  pipe(event, args, priority) {
+    if (typeof event === 'function') {
+      const ev = { event, args }
+      priority ? this.events.unshift(ev) : this.events.push(ev)
     }
+    return this
   }
-  return Icon
-})()
+  on(type, event) {
+    if (type in this.state && typeof event === 'function') {
+      this.state[type] = event
+    }
+    return this
+  }
+}
